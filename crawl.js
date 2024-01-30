@@ -1,12 +1,18 @@
 const { JSDOM } = require("jsdom");
 
+async function crawlPage(currentURL) {
+  console.log(`actively crawling: ${currentURL}`);
+
+  const resp = await fetch(currentURL);
+  console.log(resp.text());
+}
+
 function getURLsfromHTML(htmlBody, baseURL) {
   const urls = [];
   const dom = new JSDOM(htmlBody);
   const linkElements = dom.window.document.querySelectorAll("a");
 
   for (const linkElement of linkElements) {
-    
     // Check if it's a relative url
     if (linkElement.href.startsWith("/")) {
       // relative url block
@@ -25,7 +31,6 @@ function getURLsfromHTML(htmlBody, baseURL) {
         console.error("error in relative url", err.message);
       }
     }
-
   }
   return urls;
 }
