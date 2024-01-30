@@ -44,4 +44,4 @@ function normalizeUrl(UrlString) {
   return normalizedURL;
 }
 
-module.exports = { normalizeUrl, getURLsfromHTML };
+module.exports = { normalizeUrl, getURLsfromHTML, crawlPage };
