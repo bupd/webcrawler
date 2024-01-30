@@ -41,10 +41,16 @@ async function crawlPage(baseURL, currentURL, pages) {
 
     const htmlBody = await resp.text();
 
-    
+    const nextUrls = getURLsfromHTML(htmlBody, baseURL);
+
+    for (const nextUrl of nextUrls) {
+      pages = await crawlPage(baseURL, nextUrl, pages);
+    }
   } catch (err) {
     console.error(`error in ${currentURL} status: ${err.message}`);
   }
+
+  return pages;
 }
 
 function getURLsfromHTML(htmlBody, baseURL) {
