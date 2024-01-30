@@ -30,3 +30,9 @@ test("normalizeUrl with query params", () => {
   expect(actual).toEqual(expected);
 });
 
+test("normalizeUrl with Capitals", () => {
+  const input = "http://BUPD.github.io/";
+  const actual = normalizeUrl(input);
+  const expected = "bupd.github.io/";
+  expect(actual).toEqual(expected);
+});
