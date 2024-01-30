@@ -2,7 +2,27 @@
 
 const { JSDOM } = require("jsdom");
 
-async function crawlPage(currentURL) {
+async function crawlPage(baseURL, currentURL, pages) {
+  const baseURLobj = new URL(baseURL);
+  const currURLobj = new URL(currentURL);
+
+  // We are crawling only the website not the entire internet.
+  if (baseURLobj.hostname !== currURLobj.hostname) {
+    console.error(
+      `given url is external url🫨: http://${currURLobj.hostname}${currURLobj.pathname}`,
+    );
+    return pages;
+  }
+
+  const normalizedCurrentURL = normalizeUrl(currentURL);
+
+  if (pages[normalizedCurrentURL] > 0) {
+    pages[normalizedCurrentURL]++;
+    return pages;
+  }
+
+  pages[normalizedCurrentURL] = 1;
+
   console.log(`Now crawling 🐛: ${currentURL}`);
 
   try {
@@ -52,6 +72,7 @@ function getURLsfromHTML(htmlBody, baseURL) {
   }
   return urls;
 }
+
 function normalizeUrl(UrlString) {
   const urlObj = new URL(UrlString);
 

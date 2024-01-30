@@ -12,6 +12,6 @@ function main() {
   }
   const baseURL = process.argv[2].toString();
   console.log(`starting crawl 🐌 => ${baseURL}\n\n`);
-  crawlPage(baseURL)
+  crawlPage(baseURL, baseURL, {})
 }
 main();
