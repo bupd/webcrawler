@@ -1,4 +1,4 @@
-const { getURLsfromHTML } = require("../crawl.js");
+const { getURLsFromHTML } = require("../crawl.js");
 const { test, expect } = require("@jest/globals");
 
 test("getURLs absolute", () => {
@@ -12,8 +12,8 @@ test("getURLs absolute", () => {
 </html>
 `;
   const inputBaseUrl = "https://bupd.github.io";
-  const actual = getURLsfromHTML(inputHTML, inputBaseUrl);
-  const expected = ["bupd.github.io/"];
+  const actual = getURLsFromHTML(inputHTML, inputBaseUrl);
+  const expected = ["https://bupd.github.io/"];
   expect(actual).toEqual(expected);
 });
 
@@ -31,8 +31,8 @@ test("getURLs relative", () => {
 </html>
 `;
   const inputBaseUrl = "https://bupd.github.io";
-  const actual = getURLsfromHTML(inputHTML, inputBaseUrl);
-  const expected = ["bupd.github.io/", "bupd.github.io/relative/path/"];
+  const actual = getURLsFromHTML(inputHTML, inputBaseUrl);
+  const expected = ["https://bupd.github.io/", "https://bupd.github.io/relative/path"];
   expect(actual).toEqual(expected);
 });
 
@@ -50,7 +50,7 @@ test("getURLs invalid", () => {
 </html>
 `;
   const inputBaseUrl = "https://bupd.github.io";
-  const actual = getURLsfromHTML(inputHTML, inputBaseUrl);
-  const expected = ["bupd.github.io/"];
+  const actual = getURLsFromHTML(inputHTML, inputBaseUrl);
+  const expected = ["https://bupd.github.io/"];
   expect(actual).toEqual(expected);
 });
