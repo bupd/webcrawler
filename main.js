@@ -1,7 +1,7 @@
 /* eslint-env node */
 const { crawlPage } = require("./crawl.js");
 
-function main() {
+async function main() {
   if (process.argv.length < 3) {
     console.log("no args provided. Please provide a website.");
     process.exit(1);
@@ -12,6 +12,10 @@ function main() {
   }
   const baseURL = process.argv[2].toString();
   console.log(`starting crawl 🐌 => ${baseURL}\n\n`);
-  crawlPage(baseURL, baseURL, {})
+  const pages = await crawlPage(baseURL, baseURL, {});
+
+   for (const page of Object.entries(pages)) {
+    await console.log(page);
+  }
 }
 main();
