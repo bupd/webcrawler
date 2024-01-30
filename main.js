@@ -1,7 +1,16 @@
-function isEven(number) {
-  if (number < 0) throw new Error("Number must be positive");
-  if (typeof number !== "number") throw new Error("Number must be a number");
-  return number % 2 === 0;
-}
+/* eslint-env node */
+const { crawlPage } = require("./crawl.js");
 
-module.exports = isEven;
+function main() {
+  if (process.argv.length < 3) {
+    console.log("no args provided. Please provide a website.");
+    process.exit(1);
+  }
+  if (process.argv.length > 3) {
+    console.log("too many args provided. Please provide a single website URL.");
+    process.exit(1);
+  }
+  const baseURL = process.argv[2].toString();
+  console.log(`starting crawl => ${baseURL}`);
+}
+main();
