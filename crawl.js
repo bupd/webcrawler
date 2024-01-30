@@ -1,94 +1,89 @@
-/* eslint-env node */
+const { JSDOM } = require('jsdom')
 
-const { JSDOM } = require("jsdom");
-
-async function crawlPage(baseURL, currentURL, pages) {
-  const baseURLobj = new URL(baseURL);
-  const currURLobj = new URL(currentURL);
-
-  // We are crawling only the website not the entire internet.
-  if (baseURLobj.hostname !== currURLobj.hostname) {
+async function crawlPage(baseURL, currentURL, pages){
+  // if this is an offsite URL, bail immediately
+  const currentUrlObj = new URL(currentURL)
+  const baseUrlObj = new URL(baseURL)
+  if (baseUrlObj.hostname !== currentUrlObj.hostname) {
     console.error(
-      `given url is external url🫨: http://${currURLobj.hostname}${currURLobj.pathname}`,
+      `given url is external url🫨: http://${currentUrlObj.hostname}${currentUrlObj.pathname}`,
     );
-    return pages;
+  }
+  
+  const normalizedURL = normalizeURL(currentURL)
+
+  // if we've already visited this page
+  // just increase the count and don't repeat
+  // the http request
+  if (pages[normalizedURL] > 0){
+    pages[normalizedURL]++
+    return pages
   }
 
-  const normalizedCurrentURL = normalizeUrl(currentURL);
+  // initialize this page in the map
+  // since it doesn't exist yet
+  pages[normalizedURL] = 1
 
-  if (pages[normalizedCurrentURL] > 0) {
-    pages[normalizedCurrentURL]++;
-    return pages;
-  }
-
-  pages[normalizedCurrentURL] = 1;
-
-  console.log(`Now crawling 🐛: ${currentURL}`);
-
+  // fetch and parse the html of the currentURL
+  console.log(`crawling ${currentURL}`)
+  let htmlBody = ''
   try {
-    const resp = await fetch(currentURL);
-    if (resp.status > 399) {
-      console.error(`error in fetch: ${resp.status} on page: ${currentURL}`);
-      return err;
+    const resp = await fetch(currentURL)
+    if (resp.status > 399){
+      console.log(`Got HTTP error, status code: ${resp.status}`)
+      return pages
     }
-
-    const contentType = resp.headers.get("content-type");
-
-    if (!contentType.includes("text/html")) {
-      console.error(`expected html got ${contentType} on page: ${currentURL}`);
-      return;
+    const contentType = resp.headers.get('content-type')
+    if (!contentType.includes('text/html')){
+      console.log(`Got non-html response: ${contentType}`)
+      return pages
     }
-
-    const htmlBody = await resp.text();
-
-    const nextUrls = getURLsfromHTML(htmlBody, baseURL);
-
-    for (const nextUrl of nextUrls) {
-      pages = await crawlPage(baseURL, nextUrl, pages);
-    }
-  } catch (err) {
-    console.error(`error in ${currentURL} status: ${err.message}`);
+    htmlBody = await resp.text()
+  } catch (err){
+    console.log(err.message)
   }
 
-  return pages;
+  const nextURLs = getURLsFromHTML(htmlBody, baseURL)
+  for (const nextURL of nextURLs){
+    pages = await crawlPage(baseURL, nextURL, pages)
+  }
+
+  return pages
 }
 
-function getURLsfromHTML(htmlBody, baseURL) {
-  const urls = [];
-  const dom = new JSDOM(htmlBody);
-  const linkElements = dom.window.document.querySelectorAll("a");
-
-  for (const linkElement of linkElements) {
-    // Check if it's a relative url
-    if (linkElement.href.startsWith("/")) {
-      // relative url block
+function getURLsFromHTML(htmlBody, baseURL){
+  const urls = []
+  const dom = new JSDOM(htmlBody)
+  const aElements = dom.window.document.querySelectorAll('a')
+  for (const aElement of aElements){
+    if (aElement.href.slice(0,1) === '/'){
       try {
-        const url = new URL(`${baseURL}${linkElement.href}`);
-        urls.push(`${url.hostname}${url.pathname}/`);
-      } catch (err) {
-        console.error("error in relative url", err.message);
+        urls.push(new URL(aElement.href, baseURL).href)
+      } catch (err){
+        console.log(`${err.message}: ${aElement.href}`)
       }
     } else {
-      // normal url block
       try {
-        const url = new URL(linkElement.href);
-        urls.push(`${url.hostname}${url.pathname}`);
-      } catch (err) {
-        console.error("error in relative url", err.message);
+        urls.push(new URL(aElement.href).href)
+      } catch (err){
+        console.log(`${err.message}: ${aElement.href}`)
       }
     }
   }
-  return urls;
+  return urls
 }
 
-function normalizeUrl(UrlString) {
-  const urlObj = new URL(UrlString);
-
-  const hostname = urlObj.host;
-  const route = urlObj.pathname;
-
-  const normalizedURL = hostname + route;
-  return normalizedURL;
+function normalizeURL(url){
+  const urlObj = new URL(url)
+  let fullPath = `${urlObj.host}${urlObj.pathname}`
+  if (fullPath.length > 0 && fullPath.slice(-1) === '/'){
+    fullPath = fullPath.slice(0, -1)
+  }
+  return fullPath
 }
 
-module.exports = { normalizeUrl, getURLsfromHTML, crawlPage };
+module.exports = {
+  crawlPage,
+  normalizeURL,
+  getURLsFromHTML
+}
