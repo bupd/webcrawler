@@ -1,10 +1,12 @@
+/* eslint-env node */
+
 const { JSDOM } = require("jsdom");
 
 async function crawlPage(currentURL) {
   console.log(`actively crawling: ${currentURL}`);
 
   const resp = await fetch(currentURL);
-  console.log(resp.text());
+  console.log(await resp.text());
 }
 
 function getURLsfromHTML(htmlBody, baseURL) {
