@@ -1,38 +1,38 @@
-const { normalizeUrl } = require("../crawl.js");
+const { normalizeURL } = require("../crawl.js");
 const { test, expect } = require("@jest/globals");
 
-test("normalizeUrl", () => {
+test("normalizeURL", () => {
   const input = "https://bupd.github.io/";
-  const actual = normalizeUrl(input);
-  const expected = "bupd.github.io/";
+  const actual = normalizeURL(input);
+  const expected = "bupd.github.io";
   expect(actual).toEqual(expected);
 });
 
-test("normalizeUrl with query params", () => {
+test("normalizeURL with query params", () => {
   const input = "https://bupd.github.io";
-  const actual = normalizeUrl(input);
-  const expected = "bupd.github.io/";
+  const actual = normalizeURL(input);
+  const expected = "bupd.github.io";
   expect(actual).toEqual(expected);
 });
 
 
-test("normalizeUrl with query params", () => {
+test("normalizeURL with query params", () => {
   const input = "https://bupd.github.io/kumar/?q=hello";
-  const actual = normalizeUrl(input);
-  const expected = "bupd.github.io/kumar/";
+  const actual = normalizeURL(input);
+  const expected = "bupd.github.io/kumar";
   expect(actual).toEqual(expected);
 });
 
-test("normalizeUrl with query params", () => {
+test("normalizeURL with query params", () => {
   const input = "https://bupd.github.io/kumar/?q=hello";
-  const actual = normalizeUrl(input);
-  const expected = "bupd.github.io/kumar/";
+  const actual = normalizeURL(input);
+  const expected = "bupd.github.io/kumar";
   expect(actual).toEqual(expected);
 });
 
-test("normalizeUrl with Capitals", () => {
+test("normalizeURL with Capitals", () => {
   const input = "http://BUPD.github.io/";
-  const actual = normalizeUrl(input);
-  const expected = "bupd.github.io/";
+  const actual = normalizeURL(input);
+  const expected = "bupd.github.io";
   expect(actual).toEqual(expected);
 });
