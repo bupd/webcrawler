@@ -11,6 +11,8 @@ function main() {
     process.exit(1);
   }
   const baseURL = process.argv[2].toString();
+  crawlPage(baseURL)
   console.log(`starting crawl => ${baseURL}`);
+
 }
 main();
