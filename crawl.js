@@ -35,11 +35,13 @@ async function crawlPage(baseURL, currentURL, pages) {
     const contentType = resp.headers.get("content-type");
 
     if (!contentType.includes("text/html")) {
-      console.error(`expected html got ${contentType} on page: ${currentURL}`) 
-      return
+      console.error(`expected html got ${contentType} on page: ${currentURL}`);
+      return;
     }
 
-    console.log(await resp.text());
+    const htmlBody = await resp.text();
+
+    
   } catch (err) {
     console.error(`error in ${currentURL} status: ${err.message}`);
   }
